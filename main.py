@@ -7,10 +7,12 @@ from google import genai
 from google.genai.types import GenerateContentConfig
 from pydantic import BaseModel
 
-# ===========================
-# Load environment variables
-# ===========================
+load_dotenv()
+
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+
+if not GEMINI_API_KEY:
+    raise RuntimeError("GEMINI_API_KEY missing")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
@@ -158,10 +160,10 @@ Return EXACTLY this JSON:
 
         text = response.text.strip()
 
-        # Remove markdown code fences if present
+        # remove markdown code block safely
         if text.startswith("```"):
-            text = text.split("\n", 1)[1]
-            text = text.rsplit("```", 1)[0]
+            text = text.split("\n", 1)[1]  # remove first line
+            text = text.rsplit("```", 1)[0]  # remove last fence
 
             if text.startswith("json"):
                 text = text[4:].strip()
@@ -242,21 +244,6 @@ Return EXACTLY this JSON:
             "reason_codes": [],
         }
 
-        required_fields = {
-            "ticket_id",
-            "relevant_transaction_id",
-            "evidence_verdict",
-            "case_type",
-            "severity",
-            "department",
-            "agent_summary",
-            "recommended_next_action",
-            "customer_reply",
-            "human_review_required",
-            "confidence",
-            "reason_codes",
-        }
-
         for key, value in defaults.items():
             result.setdefault(key, value)
 
@@ -320,7 +307,7 @@ Return EXACTLY this JSON:
         value = result.get("human_review_required", True)
 
         if isinstance(value, str):
-            result["human_review_required"] = value.lower() == "true"
+            result["human_review_required"] = value.lower() in {"true", "1", "yes"}
         else:
             result["human_review_required"] = bool(value)
 
