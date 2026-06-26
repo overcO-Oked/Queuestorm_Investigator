@@ -7,12 +7,9 @@ from google import genai
 from google.genai.types import GenerateContentConfig
 from pydantic import BaseModel
 
-load_dotenv()
+local_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-
-if not GEMINI_API_KEY:
-    raise RuntimeError("GEMINI_API_KEY missing")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
@@ -160,10 +157,10 @@ Return EXACTLY this JSON:
 
         text = response.text.strip()
 
-        # remove markdown code block safely
+        # Remove markdown code fences if present
         if text.startswith("```"):
-            text = text.split("\n", 1)[1]  # remove first line
-            text = text.rsplit("```", 1)[0]  # remove last fence
+            text = text.split("\n", 1)[1]
+            text = text.rsplit("```", 1)[0]
 
             if text.startswith("json"):
                 text = text[4:].strip()
@@ -307,7 +304,7 @@ Return EXACTLY this JSON:
         value = result.get("human_review_required", True)
 
         if isinstance(value, str):
-            result["human_review_required"] = value.lower() in {"true", "1", "yes"}
+            result["human_review_required"] = value.lower() == "true"
         else:
             result["human_review_required"] = bool(value)
 
