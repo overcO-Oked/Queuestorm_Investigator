@@ -7,8 +7,9 @@ from google import genai
 from google.genai.types import GenerateContentConfig
 from pydantic import BaseModel
 
-# local_dotenv()
-
+# ===========================
+# Load environment variables
+# ===========================
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
@@ -239,6 +240,21 @@ Return EXACTLY this JSON:
             "human_review_required": True,
             "confidence": 0.5,
             "reason_codes": [],
+        }
+
+        required_fields = {
+            "ticket_id",
+            "relevant_transaction_id",
+            "evidence_verdict",
+            "case_type",
+            "severity",
+            "department",
+            "agent_summary",
+            "recommended_next_action",
+            "customer_reply",
+            "human_review_required",
+            "confidence",
+            "reason_codes",
         }
 
         for key, value in defaults.items():
