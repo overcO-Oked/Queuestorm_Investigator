@@ -58,6 +58,8 @@ QueueStorm_Investigator/
 └── ...
 ```
 
+> Note: For testing locally, `.env` will be required, in which case `local_dotenv()` in `main.py` should be uncommented.
+
 ---
 
 # API Endpoints
